@@ -44,7 +44,6 @@ Download: Ensure index.html is in your project folder.
 Run: Double-click index.html to open it in Chrome, Edge, or Safari.
 
 Test Credentials:
-
 User Mode: Enter any name, select "User".
 
 Trainer Mode: Enter any name, select "Trainer".
