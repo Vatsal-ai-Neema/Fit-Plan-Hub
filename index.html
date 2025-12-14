@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitPlanHub Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- 1. MODERN VARIABLES & RESET --- */
+        :root {
+            --primary: #FF4757; /* Energetic Red */
+            --dark: #2F3542;
+            --light: #F1F2F6;
+            --white: #ffffff;
+            --success: #2ED573;
+            --shadow: 0 10px 20px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { background-color: var(--light); color: var(--dark); padding-bottom: 50px; }
+
+        /* --- 2. LAYOUT COMPONENTS --- */
+        .navbar {
+            background: var(--white);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand { font-size: 1.5rem; font-weight: 600; color: var(--primary); letter-spacing: 1px; }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #2F3542 0%, #1e272e 100%);
+            color: white;
+            padding: 40px;
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .hero h2 { font-size: 2rem; margin-bottom: 10px; }
+        .hero p { opacity: 0.8; }
+
+        /* --- 3. FORMS & INPUTS --- */
+        .auth-box {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+        input:focus { border-color: var(--primary); outline: none; }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4); }
+        button.secondary { background-color: #dfe4ea; color: var(--dark); }
+        button.secondary:hover { background-color: #ced6e0; }
+
+        /* --- 4. DASHBOARD & GRID --- */
+        .controls-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .search-bar { flex: 1; }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            border: 1px solid #f1f2f6;
+            position: relative;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+
+        .card-img {
+            height: 180px;
+            background-color: #ddd;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .card-body { padding: 20px; }
+        
+        .card h3 { margin-bottom: 5px; font-size: 1.2rem; }
+        .trainer-name { color: #747d8c; font-size: 0.9rem; margin-bottom: 15px; display: block; }
+        
+        .tag { 
+            position: absolute; 
+            top: 15px; 
+            right: 15px; 
+            background: rgba(0,0,0,0.7); 
+            color: white; 
+            padding: 4px 10px; 
+            border-radius: 20px; 
+            font-size: 0.8rem; 
+        }
+
+        .price { font-size: 1.4rem; color: var(--success); font-weight: 700; }
+        
+        .blur-text { filter: blur(4px); user-select: none; opacity: 0.6; }
+        
+        /* Status Bar */
+        .status-bar {
+            background: linear-gradient(to right, #2ED573, #7bed9f);
+            color: white;
+            padding: 15px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        /* Toast Notification (Popup) */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+        }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        
+        /* Utility */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar hidden" id="main-nav">
+        <div class="brand">FitPlanHub <span style="font-size:0.5em; color:#aaa;">PRO</span></div>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <span id="nav-user" style="font-weight:600;"></span>
+            <button class="secondary" onclick="logout()" style="width:auto; margin:0; padding: 8px 15px; font-size:0.9rem;">Logout</button>
+        </div>
+    </nav>
+
+    <div id="auth-screen" class="auth-box">
+        <h2 style="color:var(--primary); margin-bottom:10px;">Welcome Back</h2>
+        <p style="color:#777; margin-bottom:20px;">Start your fitness journey today</p>
+        
+        <select id="role-select">
+            <option value="user">User (Looking for plans)</option>
+            <option value="trainer">Trainer (Selling plans)</option>
+        </select>
+        <input type="text" id="username" placeholder="Enter Full Name">
+        <button onclick="login()">Get Started</button>
+    </div>
+
+    <div id="dashboard-screen" class="container hidden">
+        
+        <div class="hero">
+            <h2 id="hero-title">Find Your Perfect Workout</h2>
+            <p>Access premium plans created by top trainers worldwide.</p>
+        </div>
+
+        <div id="sub-status" class="status-bar hidden">
+            <span>Checking subscription...</span>
+        </div>
+
+        <div id="trainer-tools" class="hidden" style="background:white; padding:25px; border-radius:12px; margin-bottom:30px; box-shadow:var(--shadow);">
+            <h3 style="margin-bottom:15px;">Create New Plan</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <input type="text" id="t-title" placeholder="Title (e.g. HIIT Burn)">
+                <input type="text" id="t-category" placeholder="Category (e.g. Cardio)">
+                <input type="text" id="t-price" placeholder="Price ($)">
+                <input type="text" id="t-duration" placeholder="Duration (e.g. 4 Weeks)">
+                <input type="text" id="t-desc" placeholder="Details/Description" style="grid-column: span 2;">
+            </div>
+            <button onclick="createPlan()">Publish Plan</button>
+        </div>
+
+        <div class="controls-bar">
+            <input type="text" id="search-input" class="search-bar" placeholder="Search plans..." onkeyup="renderFeed()">
+            <select id="filter-category" onchange="renderFeed()" style="width:auto; min-width:150px; margin:0;">
+                <option value="All">All Categories</option>
+                <option value="Strength">Strength</option>
+                <option value="Cardio">Cardio</option>
+                <option value="Yoga">Yoga</option>
+            </select>
+        </div>
+
+        <div id="feed-grid" class="grid-container">
+            </div>
+
+    </div>
+
+    <div id="toast">Notification</div>
+
+    <script>
+        // --- DATA & STATE ---
+        let currentUser = null;
+        let activeSub = { planId: null, expiry: null };
+        
+        // Mock Data with "Images" (Unsplash URLs)
+        let plans = [
+            { 
+                id: 1, 
+                trainer: "Coach Mike", 
+                title: "Spartan Strength", 
+                category: "Strength",
+                desc: "5-Day Split routine focusing on compound lifts.", 
+                price: 49, 
+                duration: "8 Weeks",
+                image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=500&auto=format&fit=crop"
+            },
+            { 
+                id: 2, 
+                trainer: "Sarah Fit", 
+                title: "Morning Yoga Flow", 
+                category: "Yoga",
+                desc: "Wake up energized with this 20-min daily routine.", 
+                price: 19, 
+                duration: "4 Weeks",
+                image: "https://images.unsplash.com/photo-1544367563-12123d8966cd?w=500&auto=format&fit=crop"
+            },
+            { 
+                id: 3, 
+                trainer: "Alex Runner", 
+                title: "Marathon Prep", 
+                category: "Cardio",
+                desc: "From couch to 42km. Includes diet plan.", 
+                price: 35, 
+                duration: "12 Weeks",
+                image: "https://images.unsplash.com/photo-1552674605-46d536d2e609?w=500&auto=format&fit=crop"
+            }
+        ];
+
+        // --- HELPER FUNCTIONS ---
+        
+        function showToast(msg, isError = false) {
+            const x = document.getElementById("toast");
+            x.innerText = msg;
+            x.style.backgroundColor = isError ? "#e74c3c" : "#333";
+            x.className = "show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        }
+
+        function getDurationMs(str) {
+            const num = parseInt(str);
+            if(str.toLowerCase().includes('week')) return num * 7 * 24 * 3600 * 1000;
+            return 10000; // default for testing
+        }
+
+        // --- APP LOGIC ---
+
+        function login() {
+            const name = document.getElementById('username').value;
+            const role = document.getElementById('role-select').value;
+            
+            if(!name) return showToast("Please enter your name!", true);
+
+            currentUser = { name, role };
+
+            // UI Transitions
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('main-nav').classList.remove('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+            
+            document.getElementById('nav-user').innerText = `Hello, ${name}`;
+            
+            if(role === 'trainer') {
+                document.getElementById('trainer-tools').classList.remove('hidden');
+                document.getElementById('hero-title').innerText = "Trainer Dashboard";
+            }
+
+            renderFeed();
+            showToast("Welcome to FitPlanHub Pro!");
+        }
+
+        function logout() {
+            location.reload();
+        }
+
+        function createPlan() {
+            const t = document.getElementById('t-title').value;
+            const c = document.getElementById('t-category').value || "General";
+            const p = document.getElementById('t-price').value;
+            const d = document.getElementById('t-duration').value;
+            const desc = document.getElementById('t-desc').value;
+
+            if(!t || !p) return showToast("Title and Price are required", true);
+
+            const newPlan = {
+                id: Date.now(),
+                trainer: currentUser.name,
+                title: t,
+                category: c,
+                price: p,
+                duration: d,
+                desc: desc,
+                image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&auto=format&fit=crop" // default image
+            };
+
+            plans.unshift(newPlan);
+            renderFeed();
+            showToast("Plan Published Successfully!");
+            
+            // Clear fields
+            document.getElementById('t-title').value = "";
+            document.getElementById('t-price').value = "";
+        }
+
+        function subscribe(id) {
+            const now = Date.now();
+            
+            // Check Lock
+            if(activeSub.planId && now < activeSub.expiry) {
+                return showToast("Finish your current plan first!", true);
+            }
+
+            const plan = plans.find(p => p.id === id);
+            
+            // Custom Confirm Logic (simulated)
+            if(confirm(`Confirm purchase: ${plan.title} for $${plan.price}?`)) {
+                activeSub = {
+                    planId: id,
+                    expiry: now + getDurationMs(plan.duration)
+                };
+                showToast("Subscription Active! Unleash the beast.");
+                renderFeed();
+            }
+        }
+
+        function renderFeed() {
+            const grid = document.getElementById('feed-grid');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const catFilter = document.getElementById('filter-category').value;
+            const statusDiv = document.getElementById('sub-status');
+            
+            grid.innerHTML = '';
+            
+            // 1. Status Bar Logic
+            const now = Date.now();
+            const hasActive = activeSub.planId && now < activeSub.expiry;
+
+            if(hasActive) {
+                const daysLeft = Math.ceil((activeSub.expiry - now)/(1000*3600*24));
+                statusDiv.classList.remove('hidden');
+                statusDiv.innerHTML = `<div>Active Plan Running</div> <div>Expires in ${daysLeft} days</div>`;
+            } else {
+                statusDiv.classList.add('hidden');
+            }
+
+            // 2. Filter Logic
+            const filteredPlans = plans.filter(p => {
+                const matchesSearch = p.title.toLowerCase().includes(search) || p.trainer.toLowerCase().includes(search);
+                const matchesCat = catFilter === "All" || p.category === catFilter;
+                return matchesSearch && matchesCat;
+            });
+
+            // 3. Render Cards
+            filteredPlans.forEach(plan => {
+                // Access Logic
+                const isMine = currentUser.role === 'trainer' && plan.trainer === currentUser.name;
+                const isSubscribed = hasActive && activeSub.planId === plan.id;
+                const canView = isMine || isSubscribed || currentUser.role === 'trainer'; // Trainers can view all for inspiration
+
+                // Dynamic HTML
+                let actionBtn = '';
+                let details = '';
+
+                if(canView) {
+                    details = `<p style="color:#555; margin-bottom:10px;">${plan.desc}</p>
+                               <div style="font-size:0.85rem; color:#888;">Duration: ${plan.duration}</div>`;
+                    
+                    if(isSubscribed) actionBtn = `<button style="background:#2ED573; cursor:default;">Active Plan</button>`;
+                    else if(isMine) actionBtn = `<button class="secondary">Edit Plan</button>`;
+                    else actionBtn = `<button class="secondary">View Details</button>`;
+                } 
+                else {
+                    details = `<p class="blur-text">This is hidden content. Purchase to unlock the secrets.</p>`;
+                    
+                    if(hasActive) {
+                        actionBtn = `<button style="background:#ccc; cursor:not-allowed;">Locked (Active Plan)</button>`;
+                    } else {
+                        actionBtn = `<button onclick="subscribe(${plan.id})">Unlock for $${plan.price}</button>`;
+                    }
+                }
+
+                const cardHTML = `
+                    <div class="card">
+                        <div class="card-img" style="background-image: url('${plan.image}');">
+                            <span class="tag">${plan.category}</span>
+                        </div>
+                        <div class="card-body">
+                            <h3>${plan.title}</h3>
+                            <span class="trainer-name">by ${plan.trainer}</span>
+                            ${details}
+                            <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center;">
+                                <span class="price">$${plan.price}</span>
+                            </div>
+                            ${actionBtn}
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHTML;
+            });
+
+            if(filteredPlans.length === 0) {
+                grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color:#888;">No plans found matching your criteria.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
