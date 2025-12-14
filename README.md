@@ -29,12 +29,12 @@ Subscription Constraints: Logic to prevent users from subscribing to multiple ac
 Content Locking: CSS filter: blur() applied to premium content until a valid subscription state is detected.
 
 🛠️ Tech Stack
-Component,Technology,Description
-Structure,HTML5,"Semantic tags (<nav>, <section>, <article>)"
-Styling,CSS3,"CSS Variables, Flexbox, Grid, Keyframe Animations"
-Logic,Vanilla JS (ES6+),"Arrow functions, Template Literals, DOM Manipulation"
-Assets,Unsplash API,Remote image fetching for realistic prototypes
-Fonts,Google Fonts,'Poppins' for modern typography
+| Category       | Technology       | Description                          |
+| :---           | :---             | :---                                 |
+| **Structure** | HTML5            | Semantic tags and layout structure   |
+| **Styling** | CSS3             | Grid, Flexbox, and CSS Variables     |
+| **Logic** | Vanilla JS (ES6) | DOM manipulation and State logic     |
+| **Assets** | Unsplash API     | External image fetching              |	
 
 ⚡ Setup & Run Instructions
 Since this project uses a Monolithic Frontend Architecture, no build tools (Webpack/Vite) or package managers (NPM) are required for the view layer.
